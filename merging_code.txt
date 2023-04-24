@@ -1,0 +1,7 @@
+import pandas as pd
+  
+# merging two csv files
+df = pd.concat(
+    map(pd.read_csv, ['african.csv', 'all restaurants.csv', 'asian fusion.csv', 'bakeries.csv', 'bars.csv', 'brunch.csv', 'burgers.csv','chinese.csv', 'coffee.csv', 'indian.csv', 'italian.csv', 'japanese.csv', 'mexican.csv', 'pizza.csv', 'salad.csv', 'sandwiches.csv', 'thai.csv', 'vegan.csv']), ignore_index=True)
+print(df)
+df.to_csv('yelp_merged.csv', index=False)

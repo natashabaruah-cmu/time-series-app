@@ -1,0 +1,111 @@
+import streamlit as st
+import pandas as pd
+import altair as alt
+
+
+# Visualization 1: Scatterplot for different restaurant type
+
+# Load the cleaned Yelp dataset
+yelp_df = pd.read_csv('yelp_merged.csv')
+
+# Sidebar filters
+name_filter = st.sidebar.selectbox('type', yelp_df['type'].unique())
+
+
+# Apply filters to the dataset
+filtered_df = yelp_df[(yelp_df['type'] == name_filter)]
+
+# Calculate the total review count for each restaurant
+restaurant_review_count = filtered_df.groupby('city')['review_count'].sum().reset_index()
+
+# Create scatterplot
+scatterplot = alt.Chart(restaurant_review_count).mark_circle().encode(
+    x='city',
+    y='review_count',
+    tooltip=['city', 'review_count']
+).properties(width=800)
+st.header('Scatterplot for different restaurant type')
+
+# Show the filtered dataset and scatterplot
+st.write(filtered_df)
+st.altair_chart(scatterplot, use_container_width=True)
+
+
+
+# Visualization 2: Scatter plot for ratings in different cities
+
+# Load data
+@st.cache_data
+def load_data():
+    yelp_url = "D:\Spring 23 semester\Interactive Data Science\HW3\yelp_merged.csv"
+    return pd.read_csv(yelp_url)
+df = load_data()
+
+# Create scatterplot
+chart = alt.Chart(df).mark_point().encode(
+    x=alt.X("city", scale=alt.Scale(zero=False)),
+    y=alt.Y("stars", scale=alt.Scale(zero=False)),
+    color=alt.Y("stars")
+).properties(
+    width=600, height=400
+).interactive()
+
+st.header('The ratings for different cities in the US')
+st.write(chart)
+            
+
+# Visualization 3: Bar graph
+
+chart1=alt.Chart(df).mark_bar().encode(
+    x='city',
+    y='review_count',
+    
+)
+st.header('Review counts for different cities in the US')
+st.write(chart1)
+
+
+
+# Visualization 4: Scatterplot on Map
+
+st.header('Scatterplot on maps')
+
+option = st.selectbox("Select the rating", ['1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5'])
+
+# Filter data based on selected option
+if option == "1":
+    
+    filtered_data = yelp_df[(yelp_df['stars'] == 1)]
+elif option == "1.5":
+    filtered_data = yelp_df[(yelp_df['stars'] == 1.5)]
+elif option=="2":
+    filtered_data = yelp_df[(yelp_df['stars'] == 2)]
+elif option=="2.5":
+    filtered_data = yelp_df[(yelp_df['stars'] == 2.5)]
+elif option=="3":
+    filtered_data = yelp_df[(yelp_df['stars'] == 3)]
+elif option=="3.5":
+    filtered_data = yelp_df[(yelp_df['stars'] == 3.5)]
+elif option=="4":
+    filtered_data = yelp_df[(yelp_df['stars'] == 4)]
+elif option=="4.5":
+    filtered_data = yelp_df[(yelp_df['stars'] == 4.5)]
+else:
+    filtered_data = yelp_df[yelp_df['stars'] == 5]
+
+# Create a map using st.map() function
+st.map(filtered_data)
+
+# Show names when zoomed in
+if st.checkbox("Show names"):
+    for i, row in filtered_data.iterrows():
+        st.write(row["name"], (row["latitude"], row["longitude"]))
+
+
+# Visualization 5: Interactive Bar chart
+
+
+c = alt.Chart(yelp_df).mark_circle().encode(
+    x='type', y='Monday', size='stars', color='c', tooltip=['type', 'Monday', 'stars'])
+
+st.altair_chart(c, use_container_width=True)
